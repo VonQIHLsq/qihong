@@ -1,0 +1,354 @@
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>无标题文档</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				font-size: 14px
+			}
+			
+			#box {
+				width: 500px;
+				margin: 100px auto
+			}
+			
+			table,
+			th,
+			td {
+				border: 1px solid #000;
+				border-collapse: collapse
+			}
+			
+			td,
+			th {
+				width: 100px;
+				height: 30px;
+				padding: 10px
+			}
+			
+			tr input[type="text"] {
+				display: none;
+				height: 24px;
+				width: 60px;
+				border: 1px solid #ccc;
+			}
+			
+			tbody tr td:first-child {
+				text-align: center;
+			}
+			
+			tfoot td {
+				text-align: right;
+			}
+			
+			.editBtn {
+				color: #666
+			}
+			
+			.delBtn {
+				color: red
+			}
+			
+			.okBtn,
+			.cancelBtn {
+				display: none
+			}
+			
+			.edit span {
+				display: none
+			}
+			
+			.edit input[type="text"] {
+				display: inline-block
+			}
+			
+			.edit .editBtn,
+			.edit .delBtn {
+				display: none
+			}
+			
+			.edit .okBtn,
+			.edit .cancelBtn {
+				display: inline
+			}
+			
+			
+			form{
+				width:300px;
+				height:260px;
+				margin-left: 100px;
+			}
+			form input{
+				margin: 15px 0;
+				width: 200px;
+				height: 30px;
+			}
+			form button{
+				margin-left: 100px;
+				margin-top: 20px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div>
+			<div id="box">
+				<form>
+					商品名称：<input type="text" id="name" value="" /><br/>
+					商品单价：<input type="text" id="pri" value="" /><br/>
+					商品数量：<input type="text" id="numb" value="" /><br/>
+					<button id="btn">添加商品</button>
+				</form>
+				<table>
+					<thead>
+						<tr>
+							<th>
+								<label>全选：<input type="checkbox" id="allCheck" class="allCheck"/></label><br/>
+								<label>反选：<input type="checkbox" id="reCheck" class="reCheck"/></label>
+							</th>
+							<th>名称</th>
+							<th>单价</th>
+							<th>数量</th>
+							<th>编辑</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<tr>
+							<td><input type="checkbox" class="check" /></td>
+							<td><span>张三</span><input type="text"></td>
+							<td><span>18</span><input type="text"></td>
+							<td><span>1</span><input type="text"></td>
+							<td>
+								<a href="javascript:;" class="editBtn">编辑</a>
+								<a href="javascript:;" class="okBtn">确定</a>
+								<a href="javascript:;" class="cancelBtn">取消</a>
+								<a href="javascript:;" class="delBtn">删除</a>
+							</td>
+
+						</tr>
+						<tr>
+							<td><input type="checkbox" class="check" /></td>
+							<td><span>李四</span><input type="text"></td>
+							<td><span>25</span><input type="text"></td>
+							<td><span>2</span><input type="text"></td>
+							<td><a href="javascript:;" class="editBtn">编辑</a><a href="javascript:;" class="okBtn">确定</a> <a href="javascript:;" class="cancelBtn">取消</a><a href="javascript:;" class="delBtn">删除</a></td>
+
+						</tr>
+						<tr>
+							<td><input type="checkbox" class="check" /></td>
+							<td><span>小强</span><input type="text"></td>
+							<td><span>22</span><input type="text"></td>
+							<td><span>3</span><input type="text"></td>
+							<td><a href="javascript:;" class="editBtn">编辑</a><a href="javascript:;" class="okBtn">确定</a> <a href="javascript:;" class="cancelBtn">取消</a><a href="javascript:;" class="delBtn">删除</a></td>
+
+						</tr>
+						<tr>
+							<td><input type="checkbox" class="check" /></td>
+							<td><span>小明</span><input type="text"></td>
+							<td><span>16</span><input type="text"></td>
+							<td><span>4</span><input type="text"></td>
+							<td><a href="javascript:;" class="editBtn">编辑</a><a href="javascript:;" class="okBtn">确定</a> <a href="javascript:;" class="cancelBtn">取消</a><a href="javascript:;" class="delBtn">删除</a></td>
+
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5">总价：￥<b id="money"></b></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+
+		</div>
+
+		<script>
+			function Table(box) {
+				this.box = box;
+				this.n = 0;
+				this.allMoney = 0;
+				this.init();
+			}
+
+			Table.prototype = {
+				constructor: Table,
+				init: function() {
+					this.table=this.box.querySelector("table");
+					//console.log(this.table);
+					this.allCheck = this.box.querySelector("#allCheck");
+					this.reCheck = this.box.querySelector("#reCheck");
+					this.check = Array.from(this.box.querySelectorAll(".check"));
+					//console.log(this.allCheck,this.reCheck,this.check);
+					this.moneyBox = this.box.querySelector("#money");
+					
+					this.name=this.box.querySelector("#name");
+					this.pri=this.box.querySelector("#pri");
+					this.numb=this.box.querySelector("#numb");
+					this.btn=this.box.querySelector("#btn");
+					
+					//console.log(this.btn);
+					
+					this.addEvents();
+					this.caclMoney();
+				},
+				addEvents: function() {
+					var _this = this;
+					this.table.onchange=function(e){
+						var e = e || window.event;
+						var target = e.target || e.srcElement;
+						switch (target.className) {
+							case "allCheck":
+								_this.allchange();
+								break;
+							case "reCheck":
+								_this.rechange();
+								break;
+							case "check":
+								_this.checkchange();
+								break;
+						}
+					}
+					this.box.onclick = function(e) {
+						var e = e || window.event;
+						var target = e.target || e.srcElement;
+						var tr = target.parentNode.parentNode;
+						var aSpan = tr.querySelectorAll("span");
+						//console.log(tr,aSpan);
+						switch (target.className) {
+							case "editBtn":
+								this.editClick(tr, aSpan);
+								break;
+							case "okBtn":
+								this.okClick(tr, aSpan);
+								break;
+							case "cancelBtn":
+								this.cancelClick(tr);
+								break;
+							case "delBtn":
+								this.delClick(tr);
+								break;
+						}
+					}.bind(this)
+
+					this.name.onblur=function(){
+						var value=_this.name.value;
+						var reg=/^.{1,4}$/;
+						if(!(reg.test(value))){
+							alert("你的商品名称输入有误");
+						}
+					}
+					
+					this.pri.onblur=function(){
+						var value=_this.pri.value;
+						var reg=/^\d{1,}$/;
+						if(!(reg.test(value))){
+							alert("商品单价输入有误");
+						}
+					}
+					
+					this.numb.onblur=function(){
+						var value=_this.numb.value;
+						var reg=/^\d{1,}$/;
+						if(!(reg.test(value))){
+							alert("商品数量输入有误");
+						}
+					}
+					
+					this.btn.onclick=function(){
+						var value1=_this.name.value;
+						var value2=_this.pri.value;
+						var value3=_this.numb.value;
+						var tr=document.createElement("tr");
+						tr.innerHTML=`<td><input type="checkbox" class="check" /></td>
+							<td><span>${value1}</span><input type="text"></td>
+							<td><span>${value2}</span><input type="text"></td>
+							<td><span>${value3}</span><input type="text"></td>
+							<td><a href="javascript:;" class="editBtn">编辑</a><a href="javascript:;" class="okBtn">确定</a> 
+							<a href="javascript:;" class="cancelBtn">取消</a><a href="javascript:;" class="delBtn">删除</a></td>`;
+						var tbody=document.querySelector("#tbody");
+						tbody.appendChild(tr);
+						
+						_this.name.value="";
+						_this.pri.value="";
+						_this.numb.value="";
+						
+						//this.check = Array.from(this.box.querySelectorAll(".check"));
+						
+						return false;
+					}
+				},
+				editClick: function(tr, aSpan) {
+					tr.classList.add("edit");
+					for (var i = 0; i < aSpan.length; i++) {
+						aSpan[i].nextElementSibling.value = aSpan[i].innerHTML;
+					}
+				},
+				okClick: function(tr, aSpan) {
+					for (var i = 0; i < aSpan.length; i++) {
+						aSpan[i].innerHTML = aSpan[i].nextElementSibling.value;
+					}
+					tr.classList.remove("edit");
+					this.caclMoney();
+				},
+				cancelClick: function(tr) {
+					tr.classList.remove("edit");
+				},
+				delClick: function(tr) {
+					if (confirm("你确定要删除吗？")) {
+						var nowCheck = tr.children[0].children[0];
+						if (nowCheck.checked) this.n--;
+						tr.remove();
+						this.check = Array.from(this.box.querySelectorAll(".check"));
+						this.caclMoney();
+					}
+				},
+				allchange:function(){
+					this.check = Array.from(this.box.querySelectorAll(".check"));
+					this.check.forEach(function(check) {
+						check.checked = this.allCheck.checked;
+					});
+					this.n = this.allCheck.checked ? this.check.length : 0;
+					//console.log(_this.n);
+					
+					this.caclMoney();
+					
+				},
+				checkchange:function(){
+					this.check = Array.from(this.box.querySelectorAll(".check"));
+					this.check.forEach(function(check) {
+						this.n += check.checked ? 1 : -1;
+						this.allCheck.checked = this.n === this.check.length;
+						//console.log(_this.n);
+						this.caclMoney();
+					}.bind(this));
+				},
+				rechange:function(){
+					this.check = Array.from(this.box.querySelectorAll(".check"));
+					this.check.forEach(function(check){
+						check.checked = !check.checked;
+					});
+					this.n = this.check.length - this.n;
+					this.caclMoney();
+				},
+				caclMoney: function() {
+					var _this = this;
+					this.allMoney = 0;
+					this.check.forEach(function(check) {
+						if (check.checked) {
+							var price = check.parentNode.nextElementSibling.nextElementSibling.children[0].innerHTML;
+							var num = check.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.children[0].innerHTML;
+							_this.allMoney += price * num;
+						}
+					});
+					this.moneyBox.innerHTML = this.allMoney;
+				}
+			}
+
+			new Table(document.querySelector("#box"));
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			li {
+				list-style: none;
+			}
+			
+			#div1 {
+				width: 850px;
+				height: 500px;
+				margin: 50px auto;
+				overflow: hidden;
+				position: relative;
+			}
+			
+			#div1 ul li {
+				height: 500px;
+				opacity: 0;
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: 0;
+				transition: opacity 1.5s;
+			}
+			
+			#div1 ul li.ac {
+				z-index: 5;
+				opacity: 1;
+			}
+			
+			#div1 ol {
+				position: absolute;
+				right: 10%;
+				bottom: 10px;
+				z-index: 6
+			}
+			
+			#div1 ol li {
+				width: 20px;
+				height: 20px;
+				background: #fff;
+				margin-left: 5px;
+				float: left;
+				line-height: 20px;
+				text-align: center;
+				cursor: pointer;
+			}
+			
+			#div1 ol li.ac {
+				background: red;
+				color: #fff;
+			}
+			
+			#div1>a {
+				text-decoration: none;
+				position: absolute;
+				top: 50%;
+				margin-top: -10px;
+				height: 40px;
+				line-height: 32px;
+				text-align: center;
+				width: 40px;
+				font-size: 40px;
+				vertical-align: middle;
+				color: #fff;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 6;
+			}
+			
+			#goPrev {
+				left: 0;
+			}
+			
+			#goNext {
+				right: 0;
+			}
+			
+			img {
+				width: 850px;
+				height: 500px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="div1">
+			<ul>
+				<li class="ac">
+					<a href="javascript:alert(0);"><img src="1.jpg" /></a>
+				</li>
+				<li>
+					<a href="javascript:alert(1);"><img src="2.jpg" /></a>
+				</li>
+				<li>
+					<a href="javascript:alert(2);"><img src="3.jpg" /></a>
+				</li>
+				<li>
+					<a href="javascript:alert(3);"><img src="4.jpg" /></a>
+				</li>
+				<li>
+					<a href="javascript:alert(4);"><img src="5.jpg" /></a>
+				</li>
+			</ul>
+			<ol>
+				<li class="ac">1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+				<li>5</li>
+			</ol>
+			<a href="javascript:;" id="goPrev">&laquo;</a>
+			<a href="javascript:;" id="goNext">&raquo;</a>
+		</div>
+		
+		<script type="text/javascript">
+			
+			function Lunbo(){
+				this.lastIndex=0,
+				this.index=0,
+				this.timer=null;
+				this.init();
+			}
+			
+			Lunbo.prototype={
+				constructor:Lunbo,
+				init:function(){
+					this.div1=document.querySelector("#div1");
+					this.aImg=document.querySelector("ul").children;
+					this.aLi=document.querySelector("ol").children;
+					this.goPrev=document.querySelector("#goPrev");
+					this.goNext=document.querySelector("#goNext");
+					this.aLiClick();
+					this.nextClick();
+					this.prevClick();
+					this.dsq();
+					this.enter();
+					this.out();
+				},
+				aLiClick:function(){
+					var _this=this;
+					for(var i=0;i<this.aLi.length;i++){
+						this.aLi[i].onclick=function(){
+							_this.index=this.innerText-1;
+							_this.change();
+						}
+					}
+				},
+				change:function(){
+					this.aLi[this.lastIndex].classList.remove("ac");
+					this.aImg[this.lastIndex].classList.remove("ac");
+					
+					this.aLi[this.index].classList.add("ac");
+					this.aImg[this.index].classList.add("ac");
+					
+					this.lastIndex=this.index;
+				},
+				nextClick:function(){
+					goNext.onclick=function(){
+						if(++this.index>this.aImg.length-1)  this.index=0;
+						this.change();
+					}.bind(this);
+				},
+				prevClick:function(){
+					goPrev.onclick=function(){
+						if(--this.index<0)  this.index=this.aImg.length-1;
+						this.change();
+					}.bind(this);
+				},
+				dsq:function(){
+					this.timer=setInterval(goNext.onclick,2000);
+				},
+				enter:function(){
+					this.div1.onmouseover=function(){
+						clearInterval(this.timer);
+					}.bind(this);
+				},
+				out:function(){
+					this.div1.onmouseout=function(){
+						this.timer=setInterval(goNext.onclick,2000);
+					}.bind(this);
+				}
+				
+			}
+			new Lunbo();
+		</script>
+	</body>
+
+</html>
